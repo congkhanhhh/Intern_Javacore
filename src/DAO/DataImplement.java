@@ -2,16 +2,15 @@ package DAO;
 
 import Config.DataSource;
 import Model.Student;
-
+import Validate.Validate;
 import java.io.*;
 import java.sql.*;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataImplement extends DataClose {
+public class DataImplement {
 
     // List all students
     public List<Student> getAllStudents() {
@@ -48,7 +47,10 @@ public class DataImplement extends DataClose {
     }
 
     // Add a student
-    public static void addStudent(Student student) {
+    public void addStudent(Student student) {
+        if (!Validate.validateAddStudent(student)) {
+            return; // Exit if validation fails
+        }
         String addStudent = "INSERT INTO student (studentname, gmail, dob, address, gender) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DataSource.createConnection();
@@ -69,6 +71,9 @@ public class DataImplement extends DataClose {
 
     // Delete a student
     public void deleteStudent(int idstudent) {
+        if(!Validate.validateDeleteStudent(idstudent)){
+            return;
+        }
         String deleteStudent = "DELETE FROM student WHERE idstudent = ?";
 
         try (Connection connection = DataSource.createConnection();
@@ -86,6 +91,9 @@ public class DataImplement extends DataClose {
 
     // Update student information
     public void updateStudent(Student student) {
+        if (!Validate.validateUpdateStudent(student.getIdstudent(), student)) {
+            return; // Exit if validation fails
+        }
         String updateStudent = "UPDATE student SET studentname = ?, gmail = ?, dob = ?, address = ?, gender = ? WHERE idstudent = ?";
 
         try (Connection connection = DataSource.createConnection();
@@ -109,6 +117,9 @@ public class DataImplement extends DataClose {
 
     // Import data from Excel (CSV file)
     public void importExcel(String filePath) {
+        if (!Validate.validateImportExcel(filePath)) {
+            return; // Exit if validation fails
+        }
         String insertQuery = "INSERT INTO student (studentname, gmail, dob, address, gender) VALUES (?, ?, ?, ?, ?)";
 
         // Define the input date format (from CSV) and output date format (for database)
@@ -166,6 +177,9 @@ public class DataImplement extends DataClose {
     }
     //Export file excel
     public void exportToCsv(String filePath) {
+        if (!Validate.validateExportExcel(filePath)) {
+            return; // Exit if validation fails
+        }
         String EXPORT_QUERY = "SELECT studentname, gmail, dob, address, gender FROM student";
         String CSV_HEADER = "Student Name,Gmail,Date of Birth,Address,Gender";
         try (Connection connection = DataSource.createConnection();
@@ -193,6 +207,14 @@ public class DataImplement extends DataClose {
 
         } catch (SQLException | IOException e) {
             e.printStackTrace();
+        }
+    }
+    public void getStudentById(int id) {
+        List< Student> ListStudent = new ArrayList<>();
+        for (Student student : ListStudent ) {
+            if (student.getIdstudent() == id) {
+                return;
+            }
         }
     }
 }

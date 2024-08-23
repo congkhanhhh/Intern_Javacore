@@ -30,4 +30,8 @@ public class StudentService {
     public void exportExcel(String filepath){
         dataImplement.exportToCsv(filepath);
     }
+    public Student getStudentById(int idstudent){
+        dataImplement.getStudentById(idstudent);
+        return null;
+    }
 }
